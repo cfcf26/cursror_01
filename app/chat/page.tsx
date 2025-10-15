@@ -35,9 +35,9 @@ export default async function ChatPage() {
   
   // buyer와 seller 프로필 정보 조회
   if (chatRooms && chatRooms.length > 0) {
-    const userIds = [
-      ...new Set(chatRooms.flatMap(room => [room.buyer_id, room.seller_id]))
-    ]
+    const userIds = Array.from(
+      new Set(chatRooms.flatMap(room => [room.buyer_id, room.seller_id]))
+    )
     
     const { data: profiles } = await supabase
       .from('profiles')
@@ -47,9 +47,10 @@ export default async function ChatPage() {
     // profiles를 맵으로 변환
     const profilesMap = new Map(profiles?.map(p => [p.id, p]) || [])
     
-    // chatRooms에 프로필 정보 추가
+    // chatRooms에 프로필 정보 추가 (products를 배열에서 단일 객체로 변환)
     const chatRoomsWithProfiles = chatRooms.map(room => ({
       ...room,
+      products: Array.isArray(room.products) ? room.products[0] : room.products,
       buyer: profilesMap.get(room.buyer_id),
       seller: profilesMap.get(room.seller_id)
     }))

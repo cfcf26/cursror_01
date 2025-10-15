@@ -1,10 +1,11 @@
 import React from 'react';
 
 interface InputProps {
+  id?: string;
   type?: 'text' | 'email' | 'password' | 'number';
   placeholder?: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   disabled?: boolean;
   className?: string;
@@ -13,6 +14,7 @@ interface InputProps {
 }
 
 export default function Input({
+  id,
   type = 'text',
   placeholder,
   value,
@@ -32,6 +34,7 @@ export default function Input({
         </label>
       )}
       <input
+        id={id}
         type={type}
         name={name}
         placeholder={placeholder}

@@ -75,12 +75,15 @@ export default async function ChatPage({ params }: ChatPageProps) {
   // 상대방 정보 계산
   const otherUser = chatRoom.buyer_id === user.id ? sellerProfile : buyerProfile
   
+  // products가 배열로 반환되므로 첫 번째 요소를 가져옴
+  const product = Array.isArray(chatRoom.products) ? chatRoom.products[0] : chatRoom.products
+  
   return (
     <ChatRoom
       roomId={params.roomId}
       currentUserId={user.id}
       otherUser={otherUser}
-      product={chatRoom.products}
+      product={product}
       initialMessages={messages || []}
     />
   )

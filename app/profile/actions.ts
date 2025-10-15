@@ -34,7 +34,7 @@ export async function updateProfile(formData: FormData) {
   return { success: true }
 }
 
-export async function deleteProduct(productId: string) {
+export async function deleteProduct(productId: string, formData: FormData) {
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
@@ -50,10 +50,9 @@ export async function deleteProduct(productId: string) {
     .eq('user_id', user.id)
 
   if (error) {
-    return { error: '상품 삭제에 실패했습니다.' }
+    console.error('상품 삭제 실패:', error)
   }
 
   revalidatePath('/profile')
-  return { success: true }
 }
 
