@@ -1,0 +1,46 @@
+---
+alwaysApply: true
+---
+# KiwiMarket 프로젝트 개요
+
+## 프로젝트 설명
+KiwiMarket은 내 근처에서 미개봉 상품을 거래할 수 있는 로컬 마켓플레이스 MVP입니다.
+당근마켓을 벤치마크로 하여 미니멀하고 깔끔한 인터페이스로 핵심 기능을 구현합니다.
+
+## 주요 기능
+- 이메일 기반 사용자 인증 (Supabase Auth)
+- 상품 등록 (제목, 설명, 가격)
+- 지역 기반 필터링 (수동 주소 입력)
+- 실시간 1:1 채팅 (Supabase Realtime)
+- 컨셉 전달용 배송 요청 버튼 (기능 없음)
+
+## 기술 스택
+- **Frontend**: Next.js 14 (App Router), React 18, TypeScript
+- **Styling**: Tailwind CSS
+- **Backend**: Supabase (Database, Auth, Realtime)
+- **Deployment**: Vercel
+
+## 프로젝트 구조
+- [app/](mdc:app) - Next.js App Router 페이지 및 레이아웃
+- [components/](mdc:components) - 재사용 가능한 React 컴포넌트
+  - [components/common/](mdc:components/common) - 공통 UI 컴포넌트
+  - [components/layout/](mdc:components/layout) - 레이아웃 컴포넌트
+  - [components/product/](mdc:components/product) - 상품 관련 컴포넌트
+- [lib/](mdc:lib) - 유틸리티 및 설정 (Supabase 클라이언트)
+- [types/](mdc:types) - TypeScript 타입 정의
+- [docs/](mdc:docs) - 프로젝트 문서
+
+## MVP 범위 외 기능 (구현하지 않음)
+- 이미지 업로드
+- 결제 시스템 통합
+- 배송 API 통합
+- GPS/자동 위치 추적
+- 평점, 리뷰, 사용자 프로필
+- 푸시 알림
+
+## 주요 타입 정의
+프로젝트의 핵심 타입은 [types/index.ts](mdc:types/index.ts)에 정의되어 있습니다:
+- `User` - 사용자 정보
+- `Product` - 상품 정보
+- `ChatRoom` - 채팅방
+- `ChatMessage` - 채팅 메시지

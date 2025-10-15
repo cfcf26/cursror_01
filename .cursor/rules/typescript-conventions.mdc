@@ -1,0 +1,101 @@
+---
+globs: *.ts,*.tsx
+---
+# TypeScript 코딩 규칙
+
+## 기본 원칙
+- 모든 코드는 TypeScript로 작성
+- 타입 안정성을 최우선으로 고려
+- `any` 타입 사용 지양
+- 가능한 한 명시적 타입 정의
+
+## 타입 정의
+
+### Props 인터페이스
+컴포넌트 Props는 항상 interface로 정의:
+```typescript
+interface ButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+  variant?: 'primary' | 'secondary';
+  className?: string;
+}
+```
+
+### 공통 타입
+- 프로젝트 전역 타입은 [types/index.ts](mdc:types/index.ts)에 정의
+- 재사용 가능한 타입은 중앙 집중식으로 관리
+- 주요 타입: `User`, `Product`, `ChatRoom`, `ChatMessage`
+
+## 함수형 컴포넌트
+- 모든 React 컴포넌트는 함수형으로 작성
+- Arrow function 또는 function declaration 모두 허용
+- Props는 구조 분해 할당 사용
+
+```typescript
+export default function ComponentName({ prop1, prop2 }: ComponentProps) {
+  // 컴포넌트 로직
+}
+```
+
+## 비동기 처리
+- async/await 패턴 사용
+- 에러 핸들링은 try-catch 블록 사용
+- Supabase API 호출 시 반환 타입 명시
+
+```typescript
+const { data, error } = await supabase
+  .from('products')
+  .select('*');
+
+if (error) {
+  console.error('Error:', error);
+  return;
+}
+```
+
+## Import 순서
+1. React 및 Next.js 관련
+2. 외부 라이브러리
+3. 내부 컴포넌트
+4. 유틸리티 및 타입
+5. 스타일
+
+```typescript
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import Button from '@/components/common/Button';
+import { Product } from '@/types';
+```
+
+## Naming Conventions
+- 컴포넌트: PascalCase (예: `ProductCard`, `ChatRoom`)
+- 함수/변수: camelCase (예: `handleSubmit`, `userId`)
+- 상수: UPPER_SNAKE_CASE (예: `MAX_PRICE`)
+- 파일명: 컴포넌트는 PascalCase.tsx, 유틸은 camelCase.ts
+
+## 주석
+- 복잡한 로직에는 한국어 주석 추가
+- JSDoc 스타일 함수 문서화 권장
+- 타입 정의에는 설명 주석 추가 (필요시)
+
+```typescript
+/**
+ * 상품 목록을 가져오는 함수
+ * @param area - 사용자 지역
+ * @returns Product 배열
+ */
+async function fetchProducts(area: string): Promise<Product[]> {
+  // 구현
+}
+```
+
+## 환경 변수
+- 환경 변수는 `process.env.NEXT_PUBLIC_*` 형식
+- Supabase 설정: [lib/supabase.ts](mdc:lib/supabase.ts) 참조
+- 타입 안정성을 위해 `!` 연산자 사용 (필수 환경 변수)
+
+```typescript
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+```

@@ -1,0 +1,63 @@
+---
+alwaysApply: true
+---
+# KiwiMarket 디자인 시스템
+
+## 색상 팔레트
+- **Primary (Kiwi Green)**: `#22c55e` - Tailwind: `kiwi-500`
+  - 사용처: 주요 버튼, 강조 요소, 브랜드 컬러
+- **Background**: `#FFFFFF` (White) - Tailwind: `bg-white`
+  - 기본 배경색
+- **Text**: `#000000` (Black) - Tailwind: `text-black`
+  - 기본 텍스트 색상
+
+## Kiwi 컬러 스케일
+Tailwind config에 정의된 kiwi 컬러 팔레트 ([tailwind.config.ts](mdc:tailwind.config.ts) 참조):
+- `kiwi-50` ~ `kiwi-900`: 다양한 명도의 그린 톤
+- 주요 컬러는 `kiwi-500` (#22c55e)
+
+## 디자인 원칙
+
+### 1. Sharp Corners (날카로운 모서리)
+- ❌ **사용 금지**: `rounded-*` 클래스
+- ✅ **사용**: 모든 요소는 직각 모서리 유지
+- 예외 없음 - 버튼, 카드, 인풋 모두 직각
+
+### 2. Border 스타일
+- 기본 border width: `border-2` (2px)
+- Border color: 상황에 따라 `border-kiwi-500` 또는 `border-black`
+
+### 3. Card 기반 레이아웃
+- 상품 목록은 카드 형태로 표시
+- 카드는 2px 테두리와 직각 모서리
+- 예시: [components/common/Card.tsx](mdc:components/common/Card.tsx)
+
+### 4. 반응형 디자인
+- 모바일 우선 (Mobile-first) 접근
+- Flexbox와 Grid 레이아웃 활용
+- Tailwind의 반응형 브레이크포인트 사용: `sm:`, `md:`, `lg:`, `xl:`
+
+## 컴포넌트 스타일 가이드
+
+### 버튼
+- 기본 스타일: `px-6 py-3 font-semibold border-2`
+- Variant:
+  - Primary: `bg-kiwi-500 text-white border-kiwi-500`
+  - Secondary: `bg-white text-kiwi-500 border-kiwi-500`
+  - Outline: `bg-transparent text-black border-black`
+- 참조: [components/common/Button.tsx](mdc:components/common/Button.tsx)
+
+### 인풋 필드
+- Border: `border-2 border-black`
+- Focus: `focus:outline-none focus:border-kiwi-500`
+- 참조: [components/common/Input.tsx](mdc:components/common/Input.tsx)
+
+### 간격 (Spacing)
+- Section 간격: `py-8` 또는 `py-12`
+- 카드 내부 패딩: `p-6`
+- 요소 간격: `gap-4` 또는 `gap-6`
+
+## 타이포그래피
+- Font: 시스템 기본 폰트 (antialiased 적용)
+- 언어: 한국어 (lang="ko")
+- 메타데이터 및 사용자 대면 텍스트는 한국어 사용

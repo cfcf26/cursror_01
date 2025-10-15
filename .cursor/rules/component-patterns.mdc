@@ -1,0 +1,140 @@
+---
+globs: components/**/*.tsx
+---
+# React 컴포넌트 패턴
+
+## 컴포넌트 구조
+
+### 표준 컴포넌트 템플릿
+```typescript
+import React from 'react';
+
+interface ComponentNameProps {
+  // Props 정의
+}
+
+export default function ComponentName({
+  // Props 구조 분해
+}: ComponentNameProps) {
+  // 상태 및 로직
+  
+  // 이벤트 핸들러
+  
+  // 렌더링
+  return (
+    <div className="...">
+      {/* JSX */}
+    </div>
+  );
+}
+```
+
+## 컴포넌트 분류
+
+### Common 컴포넌트 ([components/common/](mdc:components/common))
+재사용 가능한 기본 UI 요소:
+- `Button.tsx` - 버튼 컴포넌트
+- `Card.tsx` - 카드 컨테이너
+- `Input.tsx` - 텍스트 입력
+- `Textarea.tsx` - 여러 줄 텍스트 입력
+
+**특징**:
+- 고도로 재사용 가능
+- Props를 통한 커스터마이징
+- `className` prop으로 추가 스타일 지원
+- Variant 패턴 사용 (primary, secondary, outline 등)
+
+### Layout 컴포넌트 ([components/layout/](mdc:components/layout))
+페이지 레이아웃 구성 요소:
+- `Header.tsx` - 상단 헤더
+
+**특징**:
+- 전체 앱에서 공유
+- 네비게이션 및 인증 상태 표시
+
+### Feature 컴포넌트 ([components/product/](mdc:components/product), 등)
+특정 기능 관련 컴포넌트:
+- `ProductCard.tsx` - 상품 카드 표시
+
+**특징**:
+- 도메인 특화된 로직 포함
+- 타입 정의 활용 (예: `Product` 타입)
+
+## Props 패턴
+
+### Children Props
+```typescript
+interface CardProps {
+  children: React.ReactNode;
+  className?: string;
+}
+```
+
+### Optional Props
+- 기본값 제공: `variant = 'primary'`
+- Optional chaining: `onClick?.()`
+
+### className 확장
+항상 `className` prop을 받아서 커스터마이징 가능하게:
+```typescript
+<div className={`base-styles ${className}`}>
+```
+
+## 이벤트 핸들러
+
+### 명명 규칙
+- `handle*` 패턴 사용: `handleClick`, `handleSubmit`, `handleChange`
+
+### 구현 예시
+```typescript
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  // 로직
+};
+```
+
+## 상태 관리
+
+### useState
+- 로컬 상태는 `useState` 사용
+- 명시적 타입 정의 (필요시)
+```typescript
+const [products, setProducts] = useState<Product[]>([]);
+```
+
+### useEffect
+- 데이터 페칭, 구독 등에 사용
+- 의존성 배열 명시
+```typescript
+useEffect(() => {
+  fetchProducts();
+}, [area]);
+```
+
+## Tailwind CSS 사용
+
+### 조건부 스타일링
+```typescript
+const buttonStyles = {
+  primary: 'bg-kiwi-500 text-white',
+  secondary: 'bg-white text-kiwi-500',
+};
+
+<button className={`base ${buttonStyles[variant]}`}>
+```
+
+### 반응형 디자인
+```typescript
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+```
+
+## 접근성
+- 시맨틱 HTML 사용
+- 버튼의 `type` 속성 명시
+- Form 요소에 적절한 라벨링
+- ARIA 속성 추가 (필요시)
+
+## 성능 최적화
+- 큰 리스트는 key prop 사용
+- 불필요한 리렌더링 방지
+- 무거운 계산은 useMemo 사용 고려

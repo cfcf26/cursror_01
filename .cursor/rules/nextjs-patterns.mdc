@@ -1,0 +1,235 @@
+---
+globs: app/**/*.tsx
+---
+# Next.js App Router 패턴
+
+## 프로젝트 구조
+이 프로젝트는 Next.js 14의 App Router를 사용합니다.
+
+## 페이지 파일
+
+### page.tsx
+각 경로의 UI를 정의:
+```typescript
+// app/products/page.tsx
+export default function ProductsPage() {
+  return <div>상품 목록</div>;
+}
+```
+
+### layout.tsx
+공유 레이아웃 정의:
+```typescript
+// app/layout.tsx
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="ko">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## 메타데이터
+
+### 정적 메타데이터
+```typescript
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'KiwiMarket - 내 근처 미개봉 상품 거래',
+  description: '내 근처에서 미개봉 상품을 사고팔 수 있는 로컬 마켓플레이스',
+};
+```
+
+### 동적 메타데이터
+```typescript
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const product = await fetchProduct(params.id);
+  return {
+    title: `${product.title} - KiwiMarket`,
+  };
+}
+```
+
+## Server Components vs Client Components
+
+### Server Components (기본)
+- 데이터 페칭에 최적
+- 직접 Supabase 클라이언트 사용 가능
+- SEO 친화적
+```typescript
+// app/products/page.tsx
+import { supabase } from '@/lib/supabase';
+
+export default async function ProductsPage() {
+  const { data: products } = await supabase.from('products').select('*');
+  return <div>{/* ... */}</div>;
+}
+```
+
+### Client Components
+- 상호작용, 상태, 이벤트 리스너 필요 시
+- `'use client'` 디렉티브 필요
+```typescript
+'use client';
+
+import { useState } from 'react';
+
+export default function InteractiveComponent() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+## 라우팅
+
+### 동적 라우트
+```
+app/
+├── products/
+│   ├── page.tsx              # /products
+│   ├── [id]/
+│   │   └── page.tsx          # /products/:id
+│   └── new/
+│       └── page.tsx          # /products/new
+```
+
+### 라우트 파라미터
+```typescript
+export default function ProductDetailPage({ params }: { params: { id: string } }) {
+  return <div>Product ID: {params.id}</div>;
+}
+```
+
+## 네비게이션
+
+### Link 컴포넌트
+```typescript
+import Link from 'next/link';
+
+<Link href="/products">상품 목록</Link>
+```
+
+### useRouter (Client Component)
+```typescript
+'use client';
+import { useRouter } from 'next/navigation';
+
+export default function Component() {
+  const router = useRouter();
+  
+  const handleClick = () => {
+    router.push('/products');
+  };
+  
+  return <button onClick={handleClick}>이동</button>;
+}
+```
+
+## 데이터 페칭
+
+### Server Component에서
+```typescript
+async function getData() {
+  const { data } = await supabase.from('products').select('*');
+  return data;
+}
+
+export default async function Page() {
+  const products = await getData();
+  return <div>{/* ... */}</div>;
+}
+```
+
+### Client Component에서
+```typescript
+'use client';
+import { useEffect, useState } from 'react';
+
+export default function Page() {
+  const [data, setData] = useState([]);
+  
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch('/api/products');
+      const json = await response.json();
+      setData(json);
+    }
+    fetchData();
+  }, []);
+  
+  return <div>{/* ... */}</div>;
+}
+```
+
+## 로딩 및 에러 처리
+
+### loading.tsx
+```typescript
+// app/products/loading.tsx
+export default function Loading() {
+  return <div>로딩 중...</div>;
+}
+```
+
+### error.tsx
+```typescript
+'use client';
+
+// app/products/error.tsx
+export default function Error({ error, reset }: {
+  error: Error;
+  reset: () => void;
+}) {
+  return (
+    <div>
+      <p>오류가 발생했습니다: {error.message}</p>
+      <button onClick={reset}>다시 시도</button>
+    </div>
+  );
+}
+```
+
+## 환경 변수
+- `NEXT_PUBLIC_*` 접두사: 클라이언트에서 접근 가능
+- 없는 경우: 서버 전용
+- 설정 파일: [lib/supabase.ts](mdc:lib/supabase.ts)
+
+## Middleware (향후 사용 가능)
+인증 보호가 필요한 경우:
+```typescript
+// middleware.ts
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req, res });
+  await supabase.auth.getSession();
+  return res;
+}
+```
+
+## 이미지 최적화
+
+### Next.js Image 컴포넌트
+향후 이미지 기능 추가 시:
+```typescript
+import Image from 'next/image';
+
+<Image
+  src="/product-image.jpg"
+  alt="상품 이미지"
+  width={500}
+  height={300}
+/>
+```
+
+## 모범 사례
+1. **Server Component 우선**: 가능하면 Server Component 사용
+2. **Client Component 최소화**: 필요한 부분만 'use client'
+3. **메타데이터 설정**: SEO를 위해 각 페이지에 적절한 메타데이터
+4. **한국어 사용**: 사용자 대면 텍스트는 모두 한국어
+5. **타입 안정성**: 파라미터와 props는 명시적 타입 정의
